@@ -1,4 +1,5 @@
 from __future__ import annotations
+from decimal import Decimal
 from dataclasses import dataclass
 
 from .car import Car
@@ -10,7 +11,7 @@ class Customer:
     name: str
     product_cart: dict[str, int]
     location: list[int]
-    money: int | float
+    money: Decimal
     car: Car
 
     @classmethod
@@ -19,7 +20,7 @@ class Customer:
             name=dict_["name"],
             product_cart=dict_["product_cart"],
             location=dict_["location"],
-            money=dict_["money"],
+            money=Decimal.from_float(dict_["money"]),
             car=Car.from_dict(dict_["car"]),
         )
 
@@ -28,16 +29,19 @@ class Customer:
         x2, y2 = shop.location
         return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 
-    def get_trip_cost(self, shop: Shop, fuel_price: float) -> float:
+    def get_trip_cost(self, shop: Shop, fuel_price: Decimal) -> Decimal:
         distance = self.get_distance(shop)
-        return distance / 100 * self.car.fuel_consumption * fuel_price
+        return (
+            Decimal.from_float(distance / 100 * self.car.fuel_consumption)
+            * fuel_price
+        )
 
-    def get_full_trip_cost(self, shop: Shop, fuel_price: float) -> float:
+    def get_full_trip_cost(self, shop: Shop, fuel_price: Decimal) -> Decimal:
         return self.get_trip_cost(shop, fuel_price) * 2 + sum(
             shop.get_products_costs(self.product_cart).values()
         )
 
-    def visit_shop(self, shop: Shop, fuel_price: float) -> None:
+    def visit_shop(self, shop: Shop, fuel_price: Decimal) -> None:
         print(f"{self.name} rides to {shop.name}\n")
 
         trip_cost = self.get_trip_cost(shop, fuel_price)

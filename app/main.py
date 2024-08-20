@@ -1,5 +1,6 @@
 import os
 import json
+from decimal import Decimal
 
 from .shop import Shop, NoProductException
 from .customer import Customer
@@ -12,7 +13,7 @@ def shop_trip() -> None:
     with open(config_filename) as config_file:
         config = json.load(config_file)
 
-    fuel_price = config["FUEL_PRICE"]
+    fuel_price = Decimal(config["FUEL_PRICE"])
     customers = [Customer.from_dict(d) for d in config["customers"]]
     shops = [Shop.from_dict(d) for d in config["shops"]]
 
